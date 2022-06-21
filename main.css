@@ -113,6 +113,12 @@ th {
     align-items: center;
 }
 
+.confirmation {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
 
 li {
     text-align: left;
@@ -147,7 +153,6 @@ button.wrong {
 .next {
     max-height: 100px;
     color: white;
-    grid-area: next;
 }
 
 .return {
