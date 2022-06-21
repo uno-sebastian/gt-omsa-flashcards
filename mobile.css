@@ -36,6 +36,7 @@
     #known,
     .remaining,
     #next {
+        padding: 1vh;
         text-align: center;
         font-size: calc(10px + .3vw);
     }

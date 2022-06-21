@@ -40,9 +40,18 @@ defineQuestionSet(questionSetsJSON[0]);
 
 // set a questionSet to start with
 function defineQuestionSet(set) {
-    questionSet = set;
+    questionSet = [...set];
     nextRound = [];
     displayCounts();
+}
+
+function loadSelectedDeck() {
+    let selectedDeck = deckOptions.value;
+    let lastDeckIDX = cardDeckOptions.indexOf(selectedDeck);
+
+    knownCardsCounter = 0;
+    defineQuestionSet(questionSetsJSON[lastDeckIDX]);
+    newCard();
 }
 
 // keep track of current deck-index (cardDeckOptions / questionSetsJSON)
@@ -50,13 +59,8 @@ let lastDeckIDX = 0;
 // load the deck the user selects from the options-drop-down
 let deckOptions = document.querySelector("#decks");
 deckOptions.addEventListener("change", (e) => {
-    let selectedDeck = deckOptions.value;
-    let lastDeckIDX = cardDeckOptions.indexOf(selectedDeck);
-
-    knownCardsCounter = 0;
-    defineQuestionSet(questionSetsJSON[lastDeckIDX]);
-    newCard();
-    });
+    loadSelectedDeck();
+});
 
 // flip Answer-Card back to Question
 returnBUTTON.addEventListener("click", () => card.classList.remove("flipped"));
@@ -76,7 +80,7 @@ displayQuestion(randomPair);
 
 function displayCounts() {
     // display current stack of cards
-    remainingCards.innerHTML = `${questionSet.length} left`
+    remainingCards.innerHTML = `Remaining: ${questionSet.length}`
     knownCards.innerHTML = `Correct: ${knownCardsCounter}`; 
     nextCards.innerHTML = `Next round: ${nextRound.length}`; 
 }
@@ -227,8 +231,5 @@ correctBUTTON.addEventListener("click", () => {
 });
 
 // reload the page / begin from the beginning
-reloadBUTTON.addEventListener("click", () => location.reload());
-
-
-
+reloadBUTTON.addEventListener("click", () => loadSelectedDeck());
 
