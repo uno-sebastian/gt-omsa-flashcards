@@ -94,9 +94,9 @@ function displayQuestion(rP) {
     solution.classList.add("hidden");
 
     // display current stack of cards
-    remainingCards.innerHTML = `Es sind noch ${questionSet.length} Karten im Deck`
-    knownCards.innerHTML = `Bisher gewusst: ${knownCardsCounter}`; 
-    nextCards.innerHTML = `Nächste Runde: ${nextRound.length}`; 
+    remainingCards.innerHTML = `${questionSet.length} left`
+    knownCards.innerHTML = `Correct: ${knownCardsCounter}`; 
+    nextCards.innerHTML = `Next round: ${nextRound.length}`; 
 }
 
 // used inside of "flipBackAndDisplayAnswer" to split multiple answers
@@ -123,8 +123,8 @@ function flipBackAndDisplayAnswer() {
     let answer = document.querySelector(".answer");
     if (randomPair["input"]) {
         answer = answer.value;
-        if (answer == randomPair["Antwort"]) solution.innerHTML = "Korrekt!";
-        else solution.innerHTML = `Leider nein leider garnischt.<br>Die richtige Antwort wäre <em>"${randomPair["Antwort"]}"</em> gewesen.`;
+        if (answer == randomPair["Antwort"]) solution.innerHTML = "Correct!";
+        else solution.innerHTML = `No. The right answer is <em>"${randomPair["Antwort"]}"</em>.`;
     } else {
         // create List of possible multiple-answer
         let answerList = splitPhraseIfSeveralNumbers(randomPair["Antwort"]);
