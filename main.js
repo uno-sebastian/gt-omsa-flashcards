@@ -1,6 +1,6 @@
 // load questionSets into scope
 // index 0 will be chosen as default on page load
-const questionSetsJSON = [genders, v];
+const questionSetsJSON = [genders, vocab];
 
 // ask youser before leaving the page if they really want to
 window.addEventListener("beforeunload", (e) => {
@@ -24,7 +24,7 @@ let returnBUTTON = document.querySelector(".return");
 // card-deck-choice-fields
 const cardDeckOptions = [
     "genders",
-    "vokabeln",
+    "vocab",
 ];
 
 // Text below the Cards
