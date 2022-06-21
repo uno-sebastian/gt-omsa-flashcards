@@ -1,6 +1,6 @@
 // load questionSets into scope
 // index 0 will be chosen as default on page load
-const questionSetsJSON = [bap, som, ue, mr, iuk, im, ik, orga, ar, hgb, v];
+const questionSetsJSON = [genders, v];
 
 // ask youser before leaving the page if they really want to
 window.addEventListener("beforeunload", (e) => {
@@ -23,16 +23,7 @@ let reloadBUTTON = document.querySelector(".reload");
 let returnBUTTON = document.querySelector(".return");
 // card-deck-choice-fields
 const cardDeckOptions = [
-    "bap",
-    "som",
-    "u-ethik",
-    "m-recht",
-    "int-komm",
-    "int-management",
-    "int-kompetenzen",
-    "organisation",
-    "arb-recht",
-    "h-recht",
+    "genders",
     "vokabeln",
 ];
 
