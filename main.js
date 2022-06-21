@@ -172,7 +172,14 @@ function removeCardFromSet(correct) {
         nextRound.push(card);
         questionSet.splice(idx, 1);
     }
-    if (questionSet.length > 0 || nextRound.length > 0) newCard();
+    if (questionSet.length > 0 || nextRound.length > 0) {
+        newCard();
+    }
+    else {
+        wrongBUTTON.classList.add("hidden");
+        correctBUTTON.classList.add("hidden");
+        solution.innerHTML = "Card set finished!";
+    }
 }
 
 // attache the show-result function to the button on frontside of card
