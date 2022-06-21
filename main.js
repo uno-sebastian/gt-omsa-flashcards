@@ -40,6 +40,8 @@ let nextRound = [];
 // set a questionSet to start with
 function defineQuestionSet(set) {
     questionSet = set;
+    nextRound = [];
+    knownCardsCounter = 0;
 }
 
 // keep track of current deck-index (cardDeckOptions / questionSetsJSON)
