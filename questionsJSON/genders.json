@@ -1,5 +1,5 @@
 genders = [
-    {"Frage":"Band (Musikgruppe)","Antwort":"die Band"},
-    {"Frage":"Band (Streifen)","Antwort":"das Band"},
-    {"Frage":"Band (Buch)","Antwort":"der Band"},
+    {"Frage":"Band (Musikgruppe)","Antwort":"die Band","answer_class":"fem"},
+    {"Frage":"Band (Streifen)","Antwort":"das Band","answer_class":"neut"},
+    {"Frage":"Band (Buch)","Antwort":"der Band","answer_class":"masc"},
 ]

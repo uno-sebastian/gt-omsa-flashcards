@@ -81,6 +81,21 @@ function displayCounts() {
     nextCards.innerHTML = `Next round: ${nextRound.length}`; 
 }
 
+function resetFrontStyle() {
+    let front = document.querySelector(".front");
+    front.classList = ["front"];
+}
+
+function resetBackStyle() {
+    let back = document.querySelector(".back");
+    back.classList = ["back"];
+}
+
+function addBackStyle(style) {
+    let back = document.querySelector(".back");
+    back.classList.add(style);
+}
+
 // write question on the front of card
 function displayQuestion(rP) {
     // get curser into input-field
@@ -118,6 +133,11 @@ function flipBackAndDisplayAnswer() {
     card.classList.add("flipped");
     // the solution-text is hidden (so the card-size isn't too big from the last answer)
     solution.classList.remove("hidden");
+
+    resetBackStyle();
+    if (randomPair["answer_class"]) {
+        addBackStyle(randomPair["answer_class"]);
+    }
 
     // if no input no "nächste Frage"
     if (randomPair["input"]) newWordBUTTON.classList.remove("hidden");
@@ -181,6 +201,8 @@ function removeCardFromSet(correct) {
         newCard();
     }
     else {
+        resetBackStyle();
+        addBackStyle("finished");
         wrongBUTTON.classList.add("hidden");
         correctBUTTON.classList.add("hidden");
         solution.innerHTML = "Card set finished!";

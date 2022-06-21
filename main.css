@@ -71,26 +71,21 @@ th {
     display: flex;
     flex-direction: column;
     grid-area: innerCard;
-    background: repeating-linear-gradient(
+    background: rgb(227, 204, 131);
+    /*background: repeating-linear-gradient(
         0deg,
-        red,
         rgb(227, 204, 131) 2px,
         rgb(227, 204, 131) 40px,
         black 30px
         );
+    */
 }
 
 .card .back {
     display: flex;
     flex-direction: column;
     grid-area: innerCard;
-    background: repeating-linear-gradient(
-        0deg,
-        red,
-        rgb(131, 173, 227) 2px,
-        rgb(131, 173, 227) 40px,
-        black 30px
-        );
+    background: linear-gradient(#bbd2c5, #536976);
     -webkit-transform: rotateY( 180deg );
     -moz-transform: rotateY( 180deg );
     -o-transform: rotateY( 180deg );
@@ -132,6 +127,23 @@ li {
 
 .hidden {
     display: none;
+}
+
+.finished {
+    background: linear-gradient(Orange, Yellow) !important;
+}
+
+/* styline based on word type */
+.masc {
+    background: linear-gradient(Blue, LightBlue) !important;
+}
+
+.fem {
+    background: linear-gradient(HotPink, LightPink) !important;
+}
+
+.neut {
+    background: linear-gradient(Green, LightGreen) !important;
 }
 
 /* Buttons */
