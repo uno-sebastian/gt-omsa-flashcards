@@ -68,6 +68,8 @@ th {
 }
 
 .card .front {
+    display: flex;
+    flex-direction: column;
     grid-area: innerCard;
     background: repeating-linear-gradient(
         0deg,
