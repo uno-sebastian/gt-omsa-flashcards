@@ -35,13 +35,14 @@ let nextCards = document.querySelector("#next");
 
 // define question-set
 // global questionSet
-let questionSet = questionSetsJSON[0];
-let nextRound = [];
+let questionSet;
+defineQuestionSet(questionSetsJSON[0]);
+
 // set a questionSet to start with
 function defineQuestionSet(set) {
     questionSet = set;
     nextRound = [];
-    knownCardsCounter = 0;
+    displayCounts();
 }
 
 // keep track of current deck-index (cardDeckOptions / questionSetsJSON)
@@ -52,6 +53,7 @@ deckOptions.addEventListener("change", (e) => {
     let selectedDeck = deckOptions.value;
     let lastDeckIDX = cardDeckOptions.indexOf(selectedDeck);
 
+    knownCardsCounter = 0;
     defineQuestionSet(questionSetsJSON[lastDeckIDX]);
     newCard();
     });
@@ -71,6 +73,13 @@ let randomPair = getQuestionPair(questionSet);
 
 // display first question
 displayQuestion(randomPair);
+
+function displayCounts() {
+    // display current stack of cards
+    remainingCards.innerHTML = `${questionSet.length} left`
+    knownCards.innerHTML = `Correct: ${knownCardsCounter}`; 
+    nextCards.innerHTML = `Next round: ${nextRound.length}`; 
+}
 
 // write question on the front of card
 function displayQuestion(rP) {
@@ -92,11 +101,6 @@ function displayQuestion(rP) {
     question.innerHTML = rP["Frage"];
     // add hidden to the last answer, so the card-size rescales down (to question-size)
     solution.classList.add("hidden");
-
-    // display current stack of cards
-    remainingCards.innerHTML = `${questionSet.length} left`
-    knownCards.innerHTML = `Correct: ${knownCardsCounter}`; 
-    nextCards.innerHTML = `Next round: ${nextRound.length}`; 
 }
 
 // used inside of "flipBackAndDisplayAnswer" to split multiple answers
@@ -154,9 +158,7 @@ function flipBackAndDisplayAnswer() {
 // get a new card
 function newCard() {
     if (questionSet.length === 0 && nextRound.length > 0) {
-        questionSet = nextRound;
-        questionSetsJSON[lastDeckIDX] = nextRound;
-        nextRound = [];
+        defineQuestionSet(nextRound);
     }
     // create new randomPair in global scope
     randomPair = getQuestionPair(questionSet);
@@ -174,6 +176,7 @@ function removeCardFromSet(correct) {
         nextRound.push(card);
         questionSet.splice(idx, 1);
     }
+    displayCounts();
     if (questionSet.length > 0 || nextRound.length > 0) {
         newCard();
     }
@@ -188,8 +191,11 @@ function removeCardFromSet(correct) {
 checkAnswerBUTTON.addEventListener("click", flipBackAndDisplayAnswer);
 
 // attache newWord-function to button on backside of card
-newWordBUTTON.addEventListener("click", newCard);
-
+newWordBUTTON.addEventListener("click", () => {
+    let answer = document.querySelector(".answer");
+    answer = answer.value;
+    removeCardFromSet(answer == randomPair["Antwort"]);
+});
 // attache functionality "newCard" to wrong-button
 wrongBUTTON.addEventListener("click", () => {
     removeCardFromSet(false);
