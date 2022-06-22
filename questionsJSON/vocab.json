@@ -37,7 +37,7 @@ vocab = [
     {"Frage":"die Tätigkeit", "Antwort":"activity"},
     {"Frage":"die Voraussetzung", "Antwort":"condition, requirement"},
     {"Frage":"jeweilig", "Antwort":"particular, respective"},
-    {"Frage":"erforderlich", "Antwort":"required, necessary (not nötig)"},
+    {"Frage":"erforderlich", "Antwort":"required, necessary"},
     {"Frage":"verdienen", "Antwort":"earn, deserve"},
     {"Frage":"somit", "Antwort":"consequently, therefore"},
     {"Frage":"unmittelbar", "Antwort":"immediate, direct"},
