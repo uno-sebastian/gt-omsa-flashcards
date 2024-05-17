@@ -1,19 +1,20 @@
-// load questionSets into scope
-// index 0 will be chosen as default on page load
-const questionSetsJSON = [genders, vocab];
-
-// ask youser before leaving the page if they really want to
-window.addEventListener("beforeunload", (e) => {
-    e.preventDefault();
-    e.returnValue = "";
-});
-
+// Global Functions
+const sleepNow = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+/* Randomize array in-place using Durstenfeld shuffle algorithm */
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
 // getting the DOM elements 
 // Card Elements
 let card = document.querySelector(".card")
 let question = document.querySelector(".question");
 let solution = document.querySelector(".solution");
-let inputField = document.querySelector(".answer");
 // Buttons
 let checkAnswerBUTTON = document.querySelector(".check_answer");
 let newWordBUTTON = document.querySelector(".new_word");
@@ -21,215 +22,196 @@ let correctBUTTON = document.querySelector(".correct");
 let wrongBUTTON = document.querySelector(".wrong");
 let reloadBUTTON = document.querySelector(".reload");
 let returnBUTTON = document.querySelector(".return");
-// card-deck-choice-fields
-const cardDeckOptions = [
-    "genders",
-    "vocab",
-];
-
 // Text below the Cards
 let remainingCards = document.querySelector(".remaining");
 let knownCards = document.querySelector("#known");
-let knownCardsCounter = 0;
 let nextCards = document.querySelector("#next");
-
-// define question-set
-// global questionSet
-let questionSet;
-defineQuestionSet(questionSetsJSON[0]);
-
-// set a questionSet to start with
-function defineQuestionSet(set) {
-    questionSet = [...set];
-    nextRound = [];
-    displayCounts();
-}
-
-function loadSelectedDeck() {
-    let selectedDeck = deckOptions.value;
-    let lastDeckIDX = cardDeckOptions.indexOf(selectedDeck);
-
-    knownCardsCounter = 0;
-    defineQuestionSet(questionSetsJSON[lastDeckIDX]);
-    newCard();
-}
-
-// keep track of current deck-index (cardDeckOptions / questionSetsJSON)
-let lastDeckIDX = 0;
-// load the deck the user selects from the options-drop-down
 let deckOptions = document.querySelector("#decks");
-deckOptions.addEventListener("change", (e) => {
-    loadSelectedDeck();
-});
-
-// flip Answer-Card back to Question
-returnBUTTON.addEventListener("click", () => card.classList.remove("flipped"));
-
-
-// gets a random pair (question/answer) from the a given array of objects
-function getQuestionPair(dict) {
-    let rand = Math.floor(Math.random() * dict.length);
-    return Object.entries(dict)[rand][1];
+// Variables
+let currentDeck = undefined;
+let shuffledCardsIndex = undefined;
+let knownCardsCounter = 0;
+let finishedRounds = 0;
+// Setup
+for (var i = 0; i <= questionSets.length; i++) {
+    if (questionSets[i] == undefined) continue;
+    var opt = document.createElement('option');
+    opt.value = i;
+    opt.innerHTML = questionSets[i]['name'];
+    deckOptions.appendChild(opt);
 }
-
-// innitial randomPair on Page-Load
-let randomPair = getQuestionPair(questionSet);
-
-// display first question
-displayQuestion(randomPair);
-
-function displayCounts() {
-    // display current stack of cards
-    remainingCards.innerHTML = `Remaining: ${questionSet.length}`
-    knownCards.innerHTML = `Correct: ${knownCardsCounter}`; 
-    nextCards.innerHTML = `Next round: ${nextRound.length}`; 
+function loadDeck(deck) {
+    shuffledCardsIndex = shuffleArray([...Array(deck.length).keys()]);
+    knownCardsCounter = 0;
+    updateScores();
+    loadCard(shuffledCardsIndex[0]);
 }
-
-function resetFrontStyle() {
-    let front = document.querySelector(".front");
-    front.classList = ["front"];
+function loadSelectedDeck(index) {
+    currentDeck = questionSets[index]["data"];
+    loadDeck(currentDeck);
 }
-
-function resetBackStyle() {
-    let back = document.querySelector(".back");
-    back.classList = ["back"];
-}
-
-function addBackStyle(style) {
-    let back = document.querySelector(".back");
-    back.classList.add(style);
-}
-
-// write question on the front of card
-function displayQuestion(rP) {
-    // get curser into input-field
-    if (inputField) inputField.focus(); 
-    // remove input field from page if it is not needed (e.g. for rechtFragen)
-    if (rP["input"]) {
-        inputField.classList.remove("hidden");
-        wrongBUTTON.classList.add("hidden");
-        correctBUTTON.classList.add("hidden");
-    } else {
-        inputField.classList.add("hidden");
-        wrongBUTTON.classList.remove("hidden");
-        correctBUTTON.classList.remove("hidden");
-    }
-    // turn card to front-side
+function loadCard(index) {
+    currentCard = currentDeck[index];
+    // remove the first element
     card.classList.remove("flipped");
-    // write question on front-side of the card
-    question.innerHTML = rP["Frage"];
-    // add hidden to the last answer, so the card-size rescales down (to question-size)
-    solution.classList.add("hidden");
+    //
+    var front_text = currentCard["Front"];
+    var back_text = currentCard["Back"];
+    // format new lines with break tag
+    front_text = front_text.split("\n").join("<br>");
+    back_text = back_text.split("\n").join("<br>");
+    // write 
+    question.innerHTML = front_text;
+    solution.innerHTML = back_text;
 }
-
-// used inside of "flipBackAndDisplayAnswer" to split multiple answers
-function splitPhraseIfSeveralNumbers(phrase) {
-    let re = /\d\.\s.+\;/;
-    if (re.test(phrase)) {
-        phrase = phrase.split(";");
-    }
-    return phrase;
+async function finishDeck() {
+    question.innerHTML = "You Finished!";
+    finishedRounds++;
+    updateScores();
+    await sleepNow(1000);
+    loadDeck(currentDeck);
+    checkAnswerBUTTON.classList.remove('hidden');
 }
-
-// flip card to back-side and display/render answer(s)
-function flipBackAndDisplayAnswer() {
-    // display answer on the back of the card
-    card.classList.add("flipped");
-    // the solution-text is hidden (so the card-size isn't too big from the last answer)
-    solution.classList.remove("hidden");
-
-    resetBackStyle();
-    if (randomPair["answer_class"]) {
-        addBackStyle(randomPair["answer_class"]);
-    }
-
-    // if no input no "nächste Frage"
-    if (randomPair["input"]) newWordBUTTON.classList.remove("hidden");
-    else newWordBUTTON.classList.add("hidden");
-
-    // create backside of the card
-    let answer = document.querySelector(".answer");
-    if (randomPair["input"]) {
-        answer = answer.value;
-        if (answer == randomPair["Antwort"]) solution.innerHTML = "Correct!";
-        else solution.innerHTML = `No. The right answer is <em>"${randomPair["Antwort"]}"</em>.`;
-    } else {
-        // create List of possible multiple-answer
-        let answerList = splitPhraseIfSeveralNumbers(randomPair["Antwort"]);
-        // if it is just one answer display it
-        if (typeof answerList == "string") solution.innerHTML = randomPair["Antwort"];
-        // if muslitple answers display them as a list
-        else {
-            solution.innerHTML = "";
-            let answerListDOM = document.createElement("ol");
-            solution.appendChild(answerListDOM);
-            answerList.forEach(a => {
-                // check if a number is in front and delete it so the ordered list tag provides numbers;
-                let numRegEx = /^\s*\d+\.\s/g;
-                a = a.replace(numRegEx, "");
-                let listElement = document.createElement("li");
-                answerListDOM.appendChild(listElement);
-                listElement.innerHTML = a;
-            });
+async function answerCard(answeredCorrect) {
+    checkAnswerBUTTON.classList.add('hidden');
+    question.innerHTML = '';
+    card.classList.remove("flipped");
+    await sleepNow(500);
+    if (answeredCorrect) {
+        if (shuffledCardsIndex.length < 2 && currentDeck.length > 0) {
+            finishDeck();
         }
-    } 
-
-    // clear the input field if there is one for next questions
-    let answerInput = document.querySelector(".answer");
-    if (answerInput) answerInput.value = "";
-}
-
-// get a new card
-function newCard() {
-    if (questionSet.length === 0 && nextRound.length > 0) {
-        defineQuestionSet(nextRound);
-    }
-    // create new randomPair in global scope
-    randomPair = getQuestionPair(questionSet);
-    displayQuestion(randomPair);
-}
-
-// removes current randomPair of question Answer from global questionSet-Array of objects
-function removeCardFromSet(correct) {
-    let idx = questionSet.findIndex(qa => qa["Frage"] == randomPair["Frage"]);
-    let card = questionSet[idx];
-    if (correct) {
-        questionSet.splice(idx, 1);
-        knownCardsCounter += 1;
-    } else {
-        nextRound.push(card);
-        questionSet.splice(idx, 1);
-    }
-    displayCounts();
-    if (questionSet.length > 0 || nextRound.length > 0) {
-        newCard();
+        else {
+            checkAnswerBUTTON.classList.remove('hidden');
+            knownCardsCounter++;
+            shuffledCardsIndex.shift();
+            loadCard(shuffledCardsIndex[0]);
+            updateScores();
+        }
     }
     else {
-        resetBackStyle();
-        addBackStyle("finished");
-        wrongBUTTON.classList.add("hidden");
-        correctBUTTON.classList.add("hidden");
-        solution.innerHTML = "Card set finished!";
+        checkAnswerBUTTON.classList.remove('hidden');
+        shuffledCardsIndex = shuffleArray(shuffledCardsIndex)
+        loadCard(shuffledCardsIndex[0]);
     }
 }
+// Append Functionality
+// keep track of current deck-index (cardDeckOptions / questionSets)
+// load the deck the user selects from the options-drop-down
+deckOptions.addEventListener("change", function () { loadSelectedDeck(this.value); });
+reloadBUTTON.addEventListener("click", () => loadDeck(currentDeck));
+// flip Answer-Card back to Question
+returnBUTTON.addEventListener("click", () => card.classList.remove("flipped"));
+checkAnswerBUTTON.addEventListener("click", () => card.classList.add("flipped"));
+correctBUTTON.addEventListener("click", () => answerCard(true));
+wrongBUTTON.addEventListener("click", () => answerCard(false));
 
-// attache the show-result function to the button on frontside of card
-checkAnswerBUTTON.addEventListener("click", flipBackAndDisplayAnswer);
 
-// attache newWord-function to button on backside of card
-newWordBUTTON.addEventListener("click", () => {
-    let answer = document.querySelector(".answer");
-    answer = answer.value;
-    removeCardFromSet(answer == randomPair["Antwort"]);
-});
-// attache functionality "newCard" to wrong-button
-wrongBUTTON.addEventListener("click", () => {
-    removeCardFromSet(false);
-});
-correctBUTTON.addEventListener("click", () => {
-    removeCardFromSet(true);
-});
+// function resetFrontStyle() {
+//     let front = document.querySelector(".front");
+//     front.classList = ["front"];
+// }
+
+// function resetBackStyle() {
+//     let back = document.querySelector(".back");
+//     back.classList = ["back"];
+// }
+
+// function addBackStyle(style) {
+//     let back = document.querySelector(".back");
+//     back.classList.add(style);
+// }
+
+
+
+
+// // ask your user before leaving the page if they really want to
+// window.addEventListener("beforeunload", (e) => {
+//     e.preventDefault();
+//     e.returnValue = "";
+// });
+// UI
+function updateScores() {
+    // display current stack of cards
+    remainingCards.innerHTML = `Remaining: ${shuffledCardsIndex.length}`
+    knownCards.innerHTML = `Correct: ${knownCardsCounter}`;
+    nextCards.innerHTML = `Finished: ${finishedRounds}`;
+}
+
 
 // reload the page / begin from the beginning
-reloadBUTTON.addEventListener("click", () => loadSelectedDeck());
+reloadBUTTON.addEventListener("click", () => loadDeck(currentDeck));
 
+
+
+loadSelectedDeck(0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // removes current randomPair of question Answer from global questionSet-Array of objects
+// function removeCardFromSet(correct) {
+//     let idx = currentDeck.findIndex(qa => qa["Front"] == randomPair["Front"]);
+//     let card = currentDeck[idx];
+//     if (correct) {
+//         currentDeck.splice(idx, 1);
+//         knownCardsCounter += 1;
+//     } else {
+//         nextRound.push(card);
+//         currentDeck.splice(idx, 1);
+//     }
+//     displayCounts();
+//     if (currentDeck.length > 0 || nextRound.length > 0) {
+//         newCard();
+//     }
+//     else {
+//         resetBackStyle();
+//         addBackStyle("finished");
+//         wrongBUTTON.classList.add("hidden");
+//         correctBUTTON.classList.add("hidden");
+//         returnBUTTON.classList.add("hidden");
+//         solution.innerHTML = "Card set finished!";
+//     }
+// }
+
+
+
+// // attache newWord-function to button on backside of card
+// newWordBUTTON.addEventListener("click", () => {
+//     let answer = document.querySelector(".answer");
+//     answer = answer.value;
+//     removeCardFromSet(answer == randomPair["Back"]);
+// });
+// // attache functionality "newCard" to wrong-button
+// wrongBUTTON.addEventListener("click", () => {
+//     removeCardFromSet(false);
+// });
+// correctBUTTON.addEventListener("click", () => {
+//     removeCardFromSet(true);
+// });
