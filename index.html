@@ -7,16 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="mobile.css" />
-    <script type="text/javascript" src="./questionsJSON/genders.json"></script>   
-    <script type="text/javascript" src="./questionsJSON/vocab.json"></script>   
+    <!-- questions -->
+    <script>const questionSets = [];</script>
+    <script type="text/javascript" src="./questions/omsa_mgt_8803_part_1.js"></script>   
 </head>
 <body>
     <section class="container">
         <div class="head">
-            <lable class="lable" for="kartendecks">Card Set:</lable>
-            <select class="decks" name="kartendecks" id="decks">
-                <option id="genders" value="genders">Genders</option>
-                <option id="vocab" value="vocab">Vocabulary</option>
+            <lable class="lable" for="card_decks">Card Set:</lable>
+            <select class="decks" name="card_decks" id="decks">
             </select>
         </div>
 
@@ -25,21 +24,19 @@
             <section class="content">
                 <p></p>
                 <h2><p class="question"></p></h2>
-                <input class="answer" type="text" placeholder="translation">
             </section>
             <section class="confirmation">
-                <button type="button" class="check_answer">check</button>
+                <button type="button" class="check_answer">↺</button>
             </section>
         </div>
         <div class="back">
-                <button class="return">What was the question?</button>
+                <button class="return">↺</button>
                 <section class="content">
                     <h2><p class="solution">...</p></h2>
-                    <button type="button" class="new_word">New question</button>
                 </section>
                 <section class="confirmation">
-                    <button type="button" class="correct next">&#10004;</button>
-                    <button type="button" class="wrong next">X</button>
+                    <button type="button" class="correct next">✔</button>
+                    <button type="button" class="wrong next">✘</button>
                 </section>
     </div>
     </div>
@@ -52,6 +49,6 @@
 
     </section>
 
-    <script src="main.js"></script>
+    <script type="text/javascript" src="main.js"></script>
 </body>
 </html>
